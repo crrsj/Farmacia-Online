@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/carrinho")
+@RequestMapping("/api/carrinho")
+@CrossOrigin(origins = "*")
 public class CarrinhoControle {
 
     @Autowired
@@ -42,7 +43,7 @@ public class CarrinhoControle {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // (Opcional) Atualizar quantidade
+
     @PutMapping("/atualizar/{itemId}")
     public ResponseEntity<ItemCarrinho> atualizarQuantidade(
             @PathVariable Long itemId,
@@ -60,4 +61,5 @@ public class CarrinhoControle {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-}
+
+  }

@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/produto")
+@RequestMapping("/api/produtos")
+@CrossOrigin(origins = "*")
 public class ProdutoControle {
 
     @Autowired

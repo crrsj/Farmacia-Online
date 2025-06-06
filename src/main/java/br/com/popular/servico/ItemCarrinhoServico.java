@@ -18,9 +18,9 @@ import java.util.List;
 public class ItemCarrinhoServico {
 
     @Autowired
-    private  ItemCarrinhoRepositorio itemCarrinhoRepositorio;
+    private ItemCarrinhoRepositorio itemCarrinhoRepositorio;
     @Autowired
-    private  ProdutoRepositorio produtoRepositorio;
+    private ProdutoRepositorio produtoRepositorio;
 
     @Transactional
     public ItemCarrinho adicionarItem(Long produtoId, Integer quantidade) {
@@ -36,24 +36,24 @@ public class ItemCarrinhoServico {
         return itemCarrinhoRepositorio.save(item);
     }
 
-    // Lista todos os itens do carrinho
+
     public List<ItemCarrinho> listarItens() {
         return itemCarrinhoRepositorio.findAll();
     }
 
-    // Remove um item do carrinho
+    //
     @Transactional
     public void removerItem(Long itemId) {
         itemCarrinhoRepositorio.deleteById(itemId);
     }
 
-    // Limpa o carrinho completamente
+
     @Transactional
     public void limparCarrinho() {
         itemCarrinhoRepositorio.deleteAll();
     }
 
-    // (Opcional) Atualiza a quantidade de um item
+
     @Transactional
     public ItemCarrinho atualizarQuantidade(Long itemId, int novaQuantidade) {
         ItemCarrinho item = itemCarrinhoRepositorio.findById(itemId)
@@ -69,7 +69,7 @@ public class ItemCarrinhoServico {
 
     @Transactional
     public String finalizarCompra(CompraRequest compraRequest) {
-        // Valida estoque
+
         compraRequest.getItens().forEach(item -> {
             Produto produto = produtoRepositorio.findById(item.getProdutoId())
                     .orElseThrow(() -> new ProdutoNaoEncontradoException("Produto não encontrado: ID " + item.getProdutoId()));
@@ -94,6 +94,23 @@ public class ItemCarrinhoServico {
         // Retorna número de pedido simulado
         return "PED-" + System.currentTimeMillis();
     }
+
+    @Transactional
+    public ItemCarrinho atualizarQuantidadeItem(Long itemId, Integer novaQuantidade) {
+        ItemCarrinho item = itemCarrinhoRepositorio.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado!"));
+
+        // Valida estoque
+        if (novaQuantidade > item.getProduto().getEstoque()) {
+            throw new EstoqueInsuficienteException(
+                    "Quantidade indisponível para " + item.getProduto().getNome() +
+                            ". Disponível: " + item.getProduto().getEstoque()
+            );
+        }
+
+        item.setQuantidade(novaQuantidade);
+        return itemCarrinhoRepositorio.save(item);
+
+    }
+
 }
-
-
